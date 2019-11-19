@@ -1,100 +1,87 @@
-package TheBird;
+package wackyBird;
 
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
-public class Bird implements Updatable, Renderable{
-	
-	private float x, y;
-	private float yVel;
-	private float baseYVel = -6.0f;
-	private float gravity = 0.25f;
-	
-	private Pipes pipes;
-	private int scoredPipe = 0;
-	
-	private int score = 0;
-	
-	private Font gameFont = new Font("Arial", Font.BOLD,30);
-	
+import javax.imageio.ImageIO;
 
-	public BufferedImage flapUp;
-	public BufferedImage flapDown;
+@SuppressWarnings("unused")
+public class Bird extends Rectangle{
+	
+	private static final long serialVersionUID = 1L;
+	
+	private int speed = 4;
+	public boolean keyPressed = false;
+	public boolean gameOver = false, restart = false, restartGame = true;
+	private BufferedImage flapUp;
+	private BufferedImage flapDown;
 	
 	
-	public Bird(Pipes pipes) {
-		resetBird();
-		
+	private ArrayList<Rectangle> pipes;
+	
+	public Bird(int x, int y, ArrayList<Rectangle> pipes) {
+		setBounds(x,y,32,32);
 		this.pipes = pipes;
 		
 		try {
-			flapUp = Sprite.getSprite("/flappyUp.png");
-			flapDown = Sprite.getSprite("/flappyDown.png");
+			flapUp = Sprite.getSprite("images/flapUpBird.png");
+			flapDown = Sprite.getSprite("images/flapDownBird.png");
 			
 		}catch(IOException ex){
 			System.err.println(ex.getMessage());
 			System.exit(1);
 		}
 		
-	}	
-	
-	
-	public void resetBird() {
-		x = 100;
-		y = 100;
-		yVel = baseYVel;
 	}
 	
-	public void flap() {
-		yVel = baseYVel;
-	}
-
-	@Override
-	public void render(Graphics2D g, float interpolation) {
-		g.setColor(Color.RED);
+	public void update() {
 		
-		g.drawImage(yVel <= 0 ? flapDown : flapUp, (int) x, (int) (y + (yVel + interpolation)), null);
-		
-		g.setFont(gameFont);
-		g.drawString("Score: " +  score, 20, 50);
-		
-	}
-
-	@Override
-	public void update(Input input) {
-		y += yVel;
-		y += gravity;
-		
-		if(y < 0) {
-			y=0;
-			yVel = 0;
+		if(keyPressed) {
+			y -= speed;
+		}else {
+			y += speed;
 		}
 		
-		if(input.isSpacePressed()) {
-			flap();
-		}
-		
-		float[] pipeCoords = pipes.getCurrentPipe();
-		float pipeX = pipeCoords[0];
-		float pipeY = pipeCoords[1];
-		
-		if((x >= pipeX && x <= pipeX + pipes.getPipeWidth()
-		             && (y < pipeY || pipeY > pipes.getPipeVerticalSpacing()))
-		             || y >= Game.HEIGHT) {
-			pipes.resetPipes();
-			resetBird();
-			score = 0;			
-		}else {			
-			int currentPipeID = pipes.getCurrentPipeID();
-			score = (scoredPipe != currentPipeID) ? score + 1: score;
-			scoredPipe = currentPipeID;
+		for(int i = 0; i < pipes.size(); i++) {
+			if(this.intersects(pipes.get(i))){
+					gameOver = true;	
+					GameCore.scene = new Scene(80);
+					pipes = GameCore.scene.pipes;
+					y = GameCore.HEIGHT/2;
+					break;
+			}
 			
-		}
+//			if(gameOver) {
+//				//take a nap
+//				try {
+//					Thread.sleep(2);
+//				    gameOver = false;
+//				}
+//				catch (InterruptedException ex) {}
+//			}
+		}                   
+		
+		
+		
 		
 	}
 	
+	public void render(Graphics g) {
+ 		g.setColor(Color.red);
+		
+		g.drawImage(flapUp,x,y,width,height,null);
+	
+		if(gameOver) {
+			g.drawString("Game Over!", 100, GameCore.HEIGHT / 2 - 40); 
+		}
+		
+//		if(restartGame) {
+//			g.drawString("Press R to restart", 100, GameCore.HEIGHT / 2 - 40); 
+//		}
+	}
 
 }

@@ -1,4 +1,4 @@
-package TheBird;
+package wackyBird;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
