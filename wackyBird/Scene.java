@@ -1,4 +1,4 @@
-package wackyBird;
+package wackyBird2;
 
 import java.awt.Color;
 import java.awt.Graphics;

@@ -1,4 +1,4 @@
-package wackyBird;
+package wackyBird2;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -17,6 +17,7 @@ public class Bird extends Rectangle{
 	private int speed = 4;
 	public boolean keyPressed = false;
 	public boolean gameOver = false, restart = false, restartGame = true;
+	public boolean flappingUp = false, flappingDown = false;
 	private BufferedImage flapUp;
 	private BufferedImage flapDown;
 	
@@ -42,10 +43,15 @@ public class Bird extends Rectangle{
 		
 		if(keyPressed) {
 			y -= speed;
+			flappingUp = true;
+			flappingDown = false;
 		}else {
 			y += speed;
+			flappingUp = false;
+			flappingDown = true;
 		}
 		
+		//check for collision
 		for(int i = 0; i < pipes.size(); i++) {
 			if(this.intersects(pipes.get(i))){
 					gameOver = true;	
@@ -73,7 +79,11 @@ public class Bird extends Rectangle{
 	public void render(Graphics g) {
  		g.setColor(Color.red);
 		
-		g.drawImage(flapUp,x,y,width,height,null);
+		if(flappingUp) { 
+			g.drawImage(flapUp,x,y,width,height,null);
+		}else {
+		    g.drawImage(flapDown,x,y,width,height,null);
+		}
 	
 		if(gameOver) {
 			g.drawString("Game Over!", 100, GameCore.HEIGHT / 2 - 40); 

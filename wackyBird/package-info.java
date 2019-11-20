@@ -5,4 +5,4 @@
  * @author mauri
  *
  */
-package wackyBird;
+package wackyBird2;
