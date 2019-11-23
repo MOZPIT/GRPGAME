@@ -14,15 +14,17 @@ public class Bird extends Rectangle{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private int speed = 4;
+	private float speed = 3;
 	public boolean keyPressed = false;
-	public boolean gameOver = false, restart = false, restartGame = true;
-	public boolean flappingUp = false, flappingDown = false;
+	public boolean gameOver = false, restart = false, restartGame = false;
+	public boolean flappingUp = false, flappingDown = false, birdDropping = false;
 	private BufferedImage flapUp;
 	private BufferedImage flapDown;
 	
 	
 	private ArrayList<Rectangle> pipes;
+	
+	private float gravity = 0.1f;
 	
 	public Bird(int x, int y, ArrayList<Rectangle> pipes) {
 		setBounds(x,y,32,32);
@@ -42,13 +44,20 @@ public class Bird extends Rectangle{
 	public void update() {
 		
 		if(keyPressed) {
-			y -= speed;
+			speed = 3;
+			y -= (speed);
 			flappingUp = true;
 			flappingDown = false;
 		}else {
 			y += speed;
 			flappingUp = false;
 			flappingDown = true;
+			birdDropping = true;
+		}
+		 
+		if(birdDropping) {
+			speed += gravity;
+			if(speed > 8) speed = 8;
 		}
 		
 		//check for collision
@@ -60,17 +69,23 @@ public class Bird extends Rectangle{
 					y = GameCore.HEIGHT/2;
 					break;
 			}
-			
-//			if(gameOver) {
-//				//take a nap
-//				try {
-//					Thread.sleep(2);
-//				    gameOver = false;
-//				}
-//				catch (InterruptedException ex) {}
-//			}
 		}                   
 		
+		if(y >= GameCore.HEIGHT) {
+			//restart the game
+			try {
+				
+				Thread.sleep(20);
+			}
+			catch (InterruptedException ex) {}
+		 	
+				
+			GameCore.scene = new Scene(80);
+			pipes = GameCore.scene.pipes;
+			y = GameCore.HEIGHT/2;
+			GameCore.score = 0;
+			gameOver = false;
+		}
 		
 		
 		
@@ -79,19 +94,22 @@ public class Bird extends Rectangle{
 	public void render(Graphics g) {
  		g.setColor(Color.red);
 		
-		if(flappingUp) { 
+		if(flappingUp && !gameOver) { 
 			g.drawImage(flapUp,x,y,width,height,null);
-		}else {
+		}else if(flappingDown && !gameOver) {
 		    g.drawImage(flapDown,x,y,width,height,null);
 		}
 	
 		if(gameOver) {
-			g.drawString("Game Over!", 100, GameCore.HEIGHT / 2 - 40); 
+			g.drawString("Game Over!", 100, GameCore.HEIGHT / 2 - 40); 	
 		}
 		
-//		if(restartGame) {
-//			g.drawString("Press R to restart", 100, GameCore.HEIGHT / 2 - 40); 
-//		}
+		if(restartGame) {
+			gameOver = false;
+			g.drawString("Press R to restart", 100, GameCore.HEIGHT / 2 - 40); 
+		}
+		
+		
 	}
 
 }

@@ -5,21 +5,33 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.awt.*;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.Renderer;
 
 public class GameCore extends Canvas implements Runnable, KeyListener {
 
 	private static final long serialVersionUID = 1L;
 	public static final int WIDTH = 800, HEIGHT = 600;
-	private boolean started = false, gameOver;
+	private boolean started = false;
 	private Thread thread;
+//	private static BufferedImage backdrop = null;
+//	private static int backdropX = 0;
 	
 	public static Scene scene;
 	public Bird bird;
+	public BackDrop backdrop = new BackDrop(1);
+	public static double score = 0;
 	
 	//Constructor
 	public GameCore() {
@@ -47,6 +59,8 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 			e.printStackTrace();
 		}
 	}
+	
+	
 
 	public static void main(String[] args) {
 		JFrame jFrame = new JFrame();
@@ -104,30 +118,45 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		}
 		
 		Graphics g = buf.getDrawGraphics();
-		g.setColor(Color.black);
-		g.fillRect(0, 0, GameCore.WIDTH, GameCore.HEIGHT);
+		
+		backdrop.render(g);
 		
 		g.setColor(Color.orange);
 		g.fillRect(0,  HEIGHT - 140, WIDTH, 150);
 		
 		g.setColor(Color.green);
 		g.fillRect(0, HEIGHT - 140, WIDTH, 20);
+	
 		
 		g.setColor(Color.WHITE);
-		g.setFont(new Font("Verdana",Font.BOLD, 100));
+		g.setFont(new Font("Verdana",Font.BOLD, 21));
+		g.drawString("Score: "+ (int)score, 10, 20);
 		
-				
+		
 		scene.render(g);
 		bird.render(g); 
+		
 		
 		g.dispose();
 		buf.show();
 	}
+	
+//	public static BufferedImage loadImages() {
+////		return bgImgLevel1 = loadImage("airadventurelevel2.png");
+//	}
 
-	private void update() {	
+	private void update() {
+		backdrop.update();
 		scene.update();
 		bird.update();
+//		this.loadImages();
 	}
+	
+//	public static BufferedImage loadImage(String fileName){
+//		//return new ImageIcon(fileName).getImage();
+//		return new BufferedImage(fileName).getSource();
+//	}
+	
 
 	@Override
 	public void keyPressed(KeyEvent e) {
