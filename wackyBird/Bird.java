@@ -44,7 +44,7 @@ public class Bird extends Rectangle{
 	public void update() {
 		
 		if(keyPressed) {
-			speed = 3;
+			speed = 2;
 			y -= (speed);
 			flappingUp = true;
 			flappingDown = false;
@@ -64,8 +64,8 @@ public class Bird extends Rectangle{
 		for(int i = 0; i < pipes.size(); i++) {
 			if(this.intersects(pipes.get(i))){
 					gameOver = true;	
-					GameCore.scene = new Scene(80);
-					pipes = GameCore.scene.pipes;
+					GameCore.pipe = new Pipe(80);
+					pipes = GameCore.pipe.pipes;
 					y = GameCore.HEIGHT/2;
 					break;
 			}
@@ -80,8 +80,8 @@ public class Bird extends Rectangle{
 			catch (InterruptedException ex) {}
 		 	
 				
-			GameCore.scene = new Scene(80);
-			pipes = GameCore.scene.pipes;
+			GameCore.pipe = new Pipe(80);
+			pipes = GameCore.pipe.pipes;
 			y = GameCore.HEIGHT/2;
 			GameCore.score = 0;
 			gameOver = false;
@@ -101,7 +101,7 @@ public class Bird extends Rectangle{
 		}
 	
 		if(gameOver) {
-			g.drawString("Game Over!", 100, GameCore.HEIGHT / 2 - 40); 	
+			gameNotifications notify = new gameNotifications("Game Over");
 		}
 		
 		if(restartGame) {

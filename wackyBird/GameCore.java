@@ -25,12 +25,10 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 	public static final int WIDTH = 800, HEIGHT = 600;
 	private boolean started = false;
 	private Thread thread;
-//	private static BufferedImage backdrop = null;
-//	private static int backdropX = 0;
 	
-	public static Scene scene;
+	public static Pipe pipe;
 	public Bird bird;
-	public BackDrop backdrop = new BackDrop(1);
+	public BackDrop backdrop;
 	public static double score = 0;
 	
 	//Constructor
@@ -39,8 +37,8 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		setPreferredSize(d);
 		addKeyListener(this);
 		
-		scene = new Scene(60);
-		bird = new Bird(20,GameCore.HEIGHT/2,scene.pipes);
+		pipe = new Pipe(60);
+		bird = new Bird(20,GameCore.HEIGHT/2,pipe.pipes);
 	}
 	
 	public synchronized void start() {
@@ -70,7 +68,7 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		jFrame.setResizable(false);
 		jFrame.pack();
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jFrame.setTitle("Wacky Birds");
+		jFrame.setTitle("Wacky Bird");
 		jFrame.setLocationRelativeTo(null);
 		jFrame.setVisible(true);
 		
@@ -104,6 +102,11 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 				System.out.println("FPS: " + fps);
 			}
 			
+			if(score <= 3) {
+				backdrop = new BackDrop(1);
+			}else {
+				backdrop = new BackDrop(2);
+			}
 		}
 		
 		stop();
@@ -133,7 +136,7 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		g.drawString("Score: "+ (int)score, 10, 20);
 		
 		
-		scene.render(g);
+		pipe.render(g);
 		bird.render(g); 
 		
 		
@@ -147,7 +150,7 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 
 	private void update() {
 		backdrop.update();
-		scene.update();
+		pipe.update();
 		bird.update();
 //		this.loadImages();
 	}

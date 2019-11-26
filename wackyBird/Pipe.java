@@ -11,17 +11,17 @@ import java.util.Random;
 
 import javax.swing.Renderer;
 
-public class Scene{
+public class Pipe{
 
 	public ArrayList<Rectangle> pipes;
 	private int time;
 	private int currentTime = 0;
 	
 	private Random rand = new Random(300);
-	private int speed = 3;
+	private int speed = 2;
 	
 
-	public Scene(int time) {
+	public Pipe(int time) {
 		pipes = new ArrayList<>();
 		this.time = time;
 	}
@@ -31,7 +31,7 @@ public class Scene{
 		if(currentTime == time) {
 			currentTime = 0;
 			
-			int space = 270;
+			int space = 280;
 			int width = 150;
 			int height = rand.nextInt(GameCore.HEIGHT/2);
 			
