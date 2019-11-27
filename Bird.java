@@ -1,100 +1,73 @@
-package TheBird;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import javax.swing.ImageIcon;
 
-public class Bird implements Updatable, Renderable{
-	
-	private float x, y;
-	private float yVel;
-	private float baseYVel = -6.0f;
-	private float gravity = 0.25f;
-	
-	private Pipes pipes;
-	private int scoredPipe = 0;
-	
-	private int score = 0;
-	
-	private Font gameFont = new Font("Arial", Font.BOLD,30);
-	
 
-	public BufferedImage flapUp;
-	public BufferedImage flapDown;
+public class Bird extends Sprite 
+{
+	private double yvel;
+	private double gravity;
+	private double rotation;
 	
 	
-	public Bird(Pipes pipes) {
-		resetBird();
-		
-		this.pipes = pipes;
-		
-		try {
-			flapUp = Sprite.getSprite("/flappyUp.png");
-			flapDown = Sprite.getSprite("/flappyDown.png");
-			
-		}catch(IOException ex){
-			System.err.println(ex.getMessage());
-			System.exit(1);
-		}
-		
-	}	
 	
-	
-	public void resetBird() {
-		x = 100;
-		y = 100;
-		yVel = baseYVel;
-	}
-	
-	public void flap() {
-		yVel = baseYVel;
+	public Bird()
+	{
+		initBird();
 	}
 
-	@Override
-	public void render(Graphics2D g, float interpolation) {
-		g.setColor(Color.RED);
-		
-		g.drawImage(yVel <= 0 ? flapDown : flapUp, (int) x, (int) (y + (yVel + interpolation)), null);
-		
-		g.setFont(gameFont);
-		g.drawString("Score: " +  score, 20, 50);
-		
-	}
-
-	@Override
-	public void update(Input input) {
-		y += yVel;
-		y += gravity;
-		
-		if(y < 0) {
-			y=0;
-			yVel = 0;
-		}
-		
-		if(input.isSpacePressed()) {
-			flap();
-		}
-		
-		float[] pipeCoords = pipes.getCurrentPipe();
-		float pipeX = pipeCoords[0];
-		float pipeY = pipeCoords[1];
-		
-		if((x >= pipeX && x <= pipeX + pipes.getPipeWidth()
-		             && (y < pipeY || pipeY > pipes.getPipeVerticalSpacing()))
-		             || y >= Game.HEIGHT) {
-			pipes.resetPipes();
-			resetBird();
-			score = 0;			
-		}else {			
-			int currentPipeID = pipes.getCurrentPipeID();
-			score = (scoredPipe != currentPipeID) ? score + 1: score;
-			scoredPipe = currentPipeID;
-			
-		}
+	private void initBird() 
+	{
+		// TODO Auto-generated method stub
+		x=100;
+		y=150;
+		yvel=0;
+		gravity=0.9;
+		rotation=0.0;
+		image =new ImageIcon("bird-4.png").getImage();
 		
 	}
 	
+	public void update()
+	{
+		yvel+=gravity;
+		y+=(int) yvel;
+	}
+	public AffineTransform getTransform()
+	{
+		rotation=(90*(yvel+10)/20)-90;
+		rotation=rotation*Math.PI/2/180;
+		if (rotation>Math.PI/2) 
+		{
+			rotation=Math.PI/2;
+		}
+	
+	var aft =new AffineTransform();
+	aft.translate(x+GameConstant.BIRD_WIDTH/2,
+			y+GameConstant.BIRD_HEIGHT/2);
+	aft.rotate(rotation); 
+	aft.translate(-GameConstant.BIRD_WIDTH/2,
+			-GameConstant.BIRD_HEIGHT/2);
+	return aft;
+	}
+	public void setVelocity(int val)
+	{
+		yvel=val;
+	}
+	public static int getWidth()
+	{
+		return GameConstant.BIRD_WIDTH;
+	}
+	public int getHeight()
+	{
+		return GameConstant.BIRD_HEIGHT;
+	}
+	public void KeyPressed(KeyEvent e)
+	{
+		if (e.getKeyCode()==KeyEvent.VK_SPACE);
+		
+		
+	}
 
 }

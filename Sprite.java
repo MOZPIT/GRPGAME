@@ -1,12 +1,39 @@
-package TheBird;
-
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+import java.awt.Image;
 
 public class Sprite {
-	
-	public static BufferedImage getSprite(String fileName) throws IOException{
-		return ImageIO.read(Sprite.class.getResourceAsStream(fileName));
-	}
+
+    protected int x = 0;
+    protected int y = 0;
+    protected Image image;
+
+    public int getX() {
+
+        return x;
+    }
+
+    public void setX(int x) {
+
+        this.x = x;
+    }
+
+    public int getY() {
+
+        return y;
+    }
+
+    public void setY(int y) {
+
+        this.y = y;
+    }
+
+    public Image getImage() {
+
+        return image;
+    }
+
+    public void setImage(Image image) {
+
+        this.image = image;
+    }
 }
+
