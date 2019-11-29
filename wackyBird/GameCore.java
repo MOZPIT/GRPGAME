@@ -71,6 +71,10 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		jFrame.setTitle("Wacky Bird");
 		jFrame.setLocationRelativeTo(null);
 		jFrame.setVisible(true);
+	
+		Object Sound;
+		Sound = new Sound();
+		((Sound) Sound).playBackgroundMusic();
 		
 		game.start();
 		

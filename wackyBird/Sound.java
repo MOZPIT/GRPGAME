@@ -2,17 +2,25 @@ package wackyBird2;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 public class Sound {
 	
 	private AudioClip clip;
-	private AudioClip clip2;
 	
 	public static Sound test = new Sound("sound.wav");
-	//public static Sound test2 = new Sound("sounds/voice.wav");
+	
 	
 	public Sound(String path) {
 		clip = Applet.newAudioClip(getClass().getResource(path));
+	}
+	
+	public Sound() {
+		//do nothing
 	}
 	
 	public void play() {
@@ -23,12 +31,28 @@ public class Sound {
 		}.start();
 	}
 	
-//	public void level2() {
-//		new Thread() {
-//			public void run() {
-//				clip2 = Applet.newAudioClip(getClass().getResource("sounds/voice.wav"));
-//				clip2.play();
-//			}
-//		}.start();
-//	}
+	void playBackgroundMusic() {		
+		
+		try 
+		{
+			File musicpath = new File("sounds/backgroundAudio.wav");
+			if(musicpath.exists())
+			{
+				AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicpath);
+				Clip bgclip = AudioSystem.getClip();
+				bgclip.open(audioInput);
+				bgclip.start();
+				bgclip.loop(Clip.LOOP_CONTINUOUSLY);
+			}
+			else
+			{
+				System.out.println("Can't find file");
+			}
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
 }
