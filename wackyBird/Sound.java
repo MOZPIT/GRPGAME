@@ -35,7 +35,7 @@ public class Sound {
 		
 		try 
 		{
-			File musicpath = new File("sounds/backgroundAudio.wav");
+			File musicpath = new File("src/sounds/backgroundAudio.wav");
 			if(musicpath.exists())
 			{
 				AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicpath);

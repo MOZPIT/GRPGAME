@@ -22,7 +22,7 @@ import javax.swing.Renderer;
 public class GameCore extends Canvas implements Runnable, KeyListener {
 
 	private static final long serialVersionUID = 1L;
-	public static final int WIDTH = 800, HEIGHT = 600;
+	public static final int WIDTH = 960, HEIGHT = 800;
 	private boolean started = false;
 	private Thread thread;
 	
@@ -31,9 +31,25 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 	public BackDrop backdrop;
 	public static double score = 0;
 	
+	public static final int UP = KeyEvent.VK_UP;
+	public static final int DN = KeyEvent.VK_DOWN;
+	public static final int LT = KeyEvent.VK_LEFT;
+	public static final int RT = KeyEvent.VK_RIGHT;
+
+	public static final int _A = KeyEvent.VK_A;
+	public static final int _S = KeyEvent.VK_S;
+	
+	public static final int _1 = KeyEvent.VK_1;
+	public static final int _2 = KeyEvent.VK_2;
+	public static final int _3 = KeyEvent.VK_3;
+	public static final int _4 = KeyEvent.VK_4;
+	
 	//Constructor
 	public GameCore() {
 		Dimension d = new Dimension(GameCore.WIDTH, GameCore.HEIGHT);
+		Camera.setLocation(100, 0);
+		
+		requestFocus();
 		setPreferredSize(d);
 		addKeyListener(this);
 		
@@ -41,7 +57,7 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		bird = new Bird(20,GameCore.HEIGHT/2,pipe.pipes);
 	}
 	
-	public synchronized void start() {
+	public synchronized void start() {		
 		if(started) return;
 		started = true;
 		thread = new Thread(this);
@@ -65,7 +81,8 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		GameCore game = new GameCore();
 		jFrame.add(game);
 		
-		jFrame.setResizable(false);
+		
+		//jFrame.setResizable(false);
 		jFrame.pack();
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setTitle("Wacky Bird");
@@ -111,6 +128,8 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 			}else {
 				backdrop = new BackDrop(2);
 			}
+			
+			if(bird.keyPressed) Camera.moveRight(5);		
 		}
 		
 		stop();
@@ -128,17 +147,13 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		
 		backdrop.render(g);
 		
-		g.setColor(Color.orange);
-		g.fillRect(0,  HEIGHT - 140, WIDTH, 150);
-		
 		g.setColor(Color.green);
-		g.fillRect(0, HEIGHT - 140, WIDTH, 20);
+		g.fillRect(0, HEIGHT - 5, WIDTH, 20);
 	
 		
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Verdana",Font.BOLD, 21));
 		g.drawString("Score: "+ (int)score, 10, 20);
-		
 		
 		pipe.render(g);
 		bird.render(g); 
@@ -185,4 +200,5 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 			bird.restart = true;
 		}
 	}
+	
 }

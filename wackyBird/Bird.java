@@ -20,6 +20,7 @@ public class Bird extends Rectangle{
 	public boolean flappingUp = false, flappingDown = false, birdDropping = false;
 	private BufferedImage flapUp;
 	private BufferedImage flapDown;
+	private static int birdsXVal;
 	
 	
 	private ArrayList<Rectangle> pipes;
@@ -29,6 +30,7 @@ public class Bird extends Rectangle{
 	public Bird(int x, int y, ArrayList<Rectangle> pipes) {
 		setBounds(x,y,32,32);
 		this.pipes = pipes;
+		this.birdsXVal = x;
 		
 		try {
 			flapUp = Sprite.getSprite("images/flapUpBird.png");
@@ -110,6 +112,10 @@ public class Bird extends Rectangle{
 		}
 		
 		
+	}
+	
+	public static int getBirdX() {
+		return birdsXVal;
 	}
 
 }
