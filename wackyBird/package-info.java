@@ -1,8 +1,1 @@
-/**
- * 
- */
-/**
- * @author mauri
- *
- */
-package wackyBird2;
+package WackyBird5;

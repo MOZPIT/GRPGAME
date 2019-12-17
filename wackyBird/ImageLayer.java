@@ -1,5 +1,4 @@
-package wackyBird2;
-
+package WackyBird5;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -24,8 +23,7 @@ public class ImageLayer
 	public void draw(Graphics g)
 	{
 		for(int i = 0; i < 50; i++)
-		
-			g.drawImage(image, (x + 720*i) - Camera.x/z, y, null);
+			g.drawImage(image, (x + GameCore.WIDTH*i) - Camera.x/z, y, null);
 	}
 
 }

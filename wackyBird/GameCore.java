@@ -1,48 +1,48 @@
-package wackyBird2;
-
+package WackyBird5;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.awt.*;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.Renderer;
 
-public class GameCore extends Canvas implements Runnable, KeyListener {
+public class GameCore extends Canvas implements Runnable {
 
 	private static final long serialVersionUID = 1L;
 	public static final int WIDTH = 960, HEIGHT = 800;
-	private boolean started = false;
 	private Thread thread;
+
+	//set game state
+	public static enum STATE{
+		GAME,
+		OVER,
+		MENU
+	};
+	public static STATE state = STATE.MENU;
+
+	private Menu menu = new Menu();
+	private boolean started = false;
+	private static boolean gameOver = true;
+	public static double score = 0;
+	public static int keyTouched;
 	
 	public static Pipe pipe;
-	public Bird bird;
-	public BackDrop backdrop;
-	public static double score = 0;
-	
-	public static final int UP = KeyEvent.VK_UP;
-	public static final int DN = KeyEvent.VK_DOWN;
-	public static final int LT = KeyEvent.VK_LEFT;
-	public static final int RT = KeyEvent.VK_RIGHT;
-
-	public static final int _A = KeyEvent.VK_A;
-	public static final int _S = KeyEvent.VK_S;
-	
-	public static final int _1 = KeyEvent.VK_1;
-	public static final int _2 = KeyEvent.VK_2;
-	public static final int _3 = KeyEvent.VK_3;
-	public static final int _4 = KeyEvent.VK_4;
+	public static Bird bird;
+	public static BackDrop backdrop;
+	public static Score playerScore;
+	public static Floor gameFloor;
+	public static Trees trees;
+	public static Snow snowFlake;
+	public static Eagle eagle;
 	
 	//Constructor
 	public GameCore() {
@@ -51,21 +51,21 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 		
 		requestFocus();
 		setPreferredSize(d);
-		addKeyListener(this);
+		this.addKeyListener(new InputManager());
+		this.setIgnoreRepaint(true);
 		
-		pipe = new Pipe(60);
-		bird = new Bird(20,GameCore.HEIGHT/2,pipe.pipes);
+		newGame();
 	}
 	
 	public synchronized void start() {		
-		if(started) return;
-		started = true;
-		thread = new Thread(this);
-		thread.start();
+		if(started && state == STATE.GAME) return;
+			started = true;
+			thread = new Thread(this);
+			thread.start();
 	}
 	
 	public synchronized void stop() {
-		if(!started) return;
+		if(!started  && state == STATE.MENU) return;
 		started = false;
 		try {
 			thread.join();
@@ -73,28 +73,30 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 
 	public static void main(String[] args) {
 		JFrame jFrame = new JFrame();
 		GameCore game = new GameCore();
 		jFrame.add(game);
 		
-		
-		//jFrame.setResizable(false);
+		jFrame.setResizable(false);
 		jFrame.pack();
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setTitle("Wacky Bird");
 		jFrame.setLocationRelativeTo(null);
 		jFrame.setVisible(true);
+		jFrame.setFocusable(true);
+
 	
 		Object Sound;
 		Sound = new Sound();
 		((Sound) Sound).playBackgroundMusic();
 		
-		game.start();
+		game.createBufferStrategy(2);
 		
+		game.start();
+
 	}
 
 	@Override
@@ -113,7 +115,11 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 			
 			while(delta >= 1) {
 				update();
-				render();
+				try {
+					render();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				fps++;
 				delta--;
 				
@@ -121,83 +127,100 @@ public class GameCore extends Canvas implements Runnable, KeyListener {
 			
 			if(System.currentTimeMillis() - timer >= 1000) {
 				System.out.println("FPS: " + fps);
+				System.out.println("isGameOver: " + gameOver);
+				System.out.println("Game State: " + state);
+				System.out.println("KeyTouched: " + keyTouched);
 			}
 			
-			if(score <= 3) {
+			if(score < 1) {
 				backdrop = new BackDrop(1);
-			}else {
+				pipe.changePipeSpeed(6);
+			}else if(score < 3){
 				backdrop = new BackDrop(2);
+				pipe.changePipeSpeed(12);
+			}else{
+//				eagle.chase(bird);
+				backdrop = new BackDrop(3);
+				pipe.changePipeSpeed(18);
 			}
 			
-			if(bird.keyPressed) Camera.moveRight(5);		
 		}
 		
 		stop();
 		
 	}
+	
+	private void update() {
+		if(state == STATE.GAME){
+			backdrop.update();
+			pipe.update();
+			bird.update();
+            trees.update();
+			snowFlake.update();
+			
+			if(score > 6) {
+				eagle.chase(bird);
+				eagle.update();
+			}
+		}
 
-	private void render() {	
-		BufferStrategy buf = getBufferStrategy();
+
+	}
+
+	private void render() throws IOException {
+		BufferStrategy buf = this.getBufferStrategy();
 		if(buf == null) {
-			createBufferStrategy(3);
+			createBufferStrategy(2);
 			return;
 		}
 		
 		Graphics g = buf.getDrawGraphics();
-		
-		backdrop.render(g);
-		
-		g.setColor(Color.green);
-		g.fillRect(0, HEIGHT - 5, WIDTH, 20);
-	
-		
-		g.setColor(Color.WHITE);
-		g.setFont(new Font("Verdana",Font.BOLD, 21));
-		g.drawString("Score: "+ (int)score, 10, 20);
-		
-		pipe.render(g);
-		bird.render(g); 
-		
-		
+
+		if(state == STATE.GAME){
+			start();
+			backdrop.render(g);
+			pipe.render(g);
+			bird.render(g);
+			playerScore.render(g);
+			gameFloor.render(g);
+			trees.render(g);
+						
+			if(score > 2 && score < 6) {
+				snowFlake.render(g);
+			}else if(score > 6) {
+				eagle.render(g);
+			}
+		}else{
+			menu.render(g);
+		}
+
 		g.dispose();
 		buf.show();
+		
+	}
+
+	public static boolean isGameOver(boolean gameStatus) {
+		return gameOver = gameStatus;
 	}
 	
-//	public static BufferedImage loadImages() {
-////		return bgImgLevel1 = loadImage("airadventurelevel2.png");
-//	}
-
-	private void update() {
-		backdrop.update();
-		pipe.update();
-		bird.update();
-//		this.loadImages();
-	}
-	
-//	public static BufferedImage loadImage(String fileName){
-//		//return new ImageIcon(fileName).getImage();
-//		return new BufferedImage(fileName).getSource();
-//	}
-	
-
 	@Override
-	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			bird.keyPressed = true;
-		}
-	}
+	public void paint(Graphics g) {}
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-			bird.keyPressed = false;
-		}
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_R) {
-			bird.restart = true;
+	public static void newGame(){
+		score = 0;
+		backdrop = new BackDrop(1);
+		pipe.changePipeSpeed(6);
+		pipe = new Pipe(60);
+		bird = new Bird(20,GameCore.HEIGHT/2,pipe.pipes);
+		playerScore = new Score();
+		gameFloor = new Floor();
+		trees = new Trees();
+		snowFlake = new Snow(3, 1, 3);
+		try {
+			eagle = new Eagle(50, 10, 20, 0);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

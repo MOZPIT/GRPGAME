@@ -1,5 +1,4 @@
-package wackyBird2;
-
+package WackyBird5;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -9,20 +8,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.ImageIcon;
 import javax.swing.Renderer;
 
-public class Pipe{
+public class Pipe extends Sprite{
 
 	public ArrayList<Rectangle> pipes;
 	private int time;
 	private int currentTime = 0;
+	public Image pipeImage= new ImageIcon("pipe.png").getImage();
+//	public ArrayList<Image> newPipes;
 	
 	private Random rand = new Random(300);
-	private int speed = 2;
+	public static int speed = 2;
 	
 
 	public Pipe(int time) {
-		pipes = new ArrayList<>();
+		pipes = new ArrayList<Rectangle>();
+//		@SuppressWarnings("unused")
+//		ArrayList<Image> newPipes = new ArrayList<Image>();
 		this.time = time;
 	}
 	
@@ -35,8 +39,8 @@ public class Pipe{
 			int width = 150;
 			int height = rand.nextInt(GameCore.HEIGHT/2);
 			
-			pipes.add(new Rectangle(GameCore.WIDTH + width + pipes.size() * 300, GameCore.HEIGHT - height -120, width, height));
-			pipes.add(new Rectangle(GameCore.WIDTH + width + (pipes.size() - 1) * 300, 0, width, GameCore.HEIGHT - height - space));
+			pipes.add(new Rectangle(GameCore.WIDTH + width + pipes.size() * 500, GameCore.HEIGHT - height, width, height));
+			pipes.add(new Rectangle(GameCore.WIDTH + width + (pipes.size() - 1) * 500, 0, width, GameCore.HEIGHT - height - space));
 		}
 		
 		for(int i = 0; i < pipes.size(); i++) {
@@ -56,12 +60,18 @@ public class Pipe{
 
 
 	public void render(Graphics g) {
-		g.setColor(Color.blue);
+		g.setColor(Color.GREEN);
 		
 		for(int i = 0; i < pipes.size(); i++) {
 			Rectangle rect = pipes.get(i);
-			g.fillRect(rect.x, rect.y, rect.width, rect.height);
+			g.setColor(Color.GREEN);
+		    g.draw3DRect(rect.x, rect.y, rect.width, rect.height, true);
+		    g.fill3DRect(rect.x, rect.y, rect.width, rect.height, true);
 		}
 	
+	}
+	
+	public static void changePipeSpeed(int s) {
+		speed = s;
 	}
 }

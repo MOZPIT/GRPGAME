@@ -1,5 +1,4 @@
-package wackyBird2;
-
+package WackyBird5;
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.event.KeyEvent;
@@ -35,7 +34,7 @@ public class Sound {
 		
 		try 
 		{
-			File musicpath = new File("src/sounds/backgroundAudio.wav");
+			File musicpath = new File("src/WackyBird5/sounds/backgroundAudio.wav");
 			if(musicpath.exists())
 			{
 				AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicpath);

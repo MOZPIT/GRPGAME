@@ -1,6 +1,6 @@
-package wackyBird2;
-
+package WackyBird5;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,39 +10,49 @@ import javax.imageio.ImageIO;
 
 public class BackDrop {
 	private String filename;
+//	private String trees;
+	
 	public BufferedImage backdrop = null;
-	private int level;
-	public int dx = 0;
-	public int dy = 0;
-	public int dz = 0;
+//	public BufferedImage trees = null;
+	
+	public ImageLayer levelBackground;
+	private static int level;
+	private int dx;
+	
+//	ImageLayer trees = new ImageLayer("images/dawntree.png", 0, GameCore.HEIGHT+100, 1);
+	
 	/* Constructor */
 	public BackDrop(int level) {
 		this.level = level;
 	}
-
+	
 	public void update() {
 		if(level == 1) {
 			filename = "images/airadventurelevel2.png";
 		}else if(level == 2) {
+			filename = "images/airadventurelevel3.png";
+		}else if(level == 3) {
 			filename = "images/airadventurelevel4.png";
-			
 		}
 		
-		if(Bird.getBirdX() > GameCore.WIDTH && level == 1) {
-			dx = 0;
-		}else if(Bird.getBirdX() > (GameCore.WIDTH*2) && level == 2) {
-			dx = 0;
-		}else {
-			dx = Bird.getBirdX();
-		}
+//		treesFile = "images/dawntree.png";
+		
+		
+		
+//		dx = Bird.getBirdX();
+		dx = 0;
 	}
+	
+	
 
 	public void render(Graphics g) {
 		if(backdrop != null) {
-				g.drawImage(backdrop, (dx - Camera.x/10), -200, null);
+				for(int i = 0; i < 7; i++) {
+					g.drawImage(backdrop, ((int) ((dx + (GameCore.WIDTH * .01)) - Camera.x)), -100, null);
+				}
 		}else {
 			try {
-			    try {
+			    try {       
 					backdrop = ImageIO.read(new File(getClass().getResource(filename).toURI()));
 				} catch (URISyntaxException e) {
 					e.printStackTrace();
@@ -51,5 +61,11 @@ public class BackDrop {
 			    e.printStackTrace();
 			}
 		}
+		
+//		trees.draw(g);
+	}	
+	
+	public static int getLevel() {
+		return level;
 	}
-}
+  }

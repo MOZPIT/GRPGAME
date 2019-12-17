@@ -1,5 +1,4 @@
-package wackyBird2;
-
+package WackyBird5;
 public class Camera
 {
 	static int x; 

@@ -1,5 +1,4 @@
-package wackyBird2;
-
+package WackyBird5;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -22,7 +21,7 @@ public class Scene{
 	
 
 	public Scene(int time) {
-		pipes = new ArrayList<>();
+		pipes = new ArrayList<Rectangle>();
 		this.time = time;
 	}
 	
